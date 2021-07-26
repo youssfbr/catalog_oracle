@@ -3,6 +3,7 @@ package com.github.youssf.catalog.services;
 import com.github.youssf.catalog.entities.Category;
 import com.github.youssf.catalog.repositories.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class CategoryService {
         this.repository = repository;
     }
 
+    @Transactional(readOnly = true)
     public List<Category> findAll() {
         return  repository.findAll();
     }

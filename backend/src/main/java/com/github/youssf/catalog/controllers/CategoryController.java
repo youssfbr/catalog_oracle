@@ -10,6 +10,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.*;
+
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
@@ -22,12 +24,12 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+        return ok(service.findAll());
     }
 
     @GetMapping("{id}")
     public ResponseEntity<CategoryDTO> findAll(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ok(service.findById(id));
     }
 
     @PostMapping
@@ -37,6 +39,13 @@ public class CategoryController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(dto);
+        return created(uri).body(dto);
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<CategoryDTO> update(@PathVariable long id, @RequestBody CategoryDTO dto) {
+
+        return ok(service.update(id, dto));
+    }
+
 }

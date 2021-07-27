@@ -23,7 +23,7 @@ public class CategoryService {
     public List<CategoryDTO> findAll() {
         List<Category> list = repository.findAll();
 
-        return list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
+        return list.stream().map(CategoryDTO::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -41,4 +41,17 @@ public class CategoryService {
         entity = repository.save(entity);
         return new CategoryDTO(entity);
     }
+
+    @Transactional
+    public CategoryDTO update(long id, CategoryDTO dto) {
+         return repository.findById(id)
+                .map(entity -> {
+                    entity.setName(dto.getName());
+                    entity = repository.save(entity);
+
+                    return new CategoryDTO(entity);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Id Resource " + id + " not found"));
+    }
+
 }

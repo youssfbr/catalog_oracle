@@ -48,4 +48,12 @@ public class CategoryController {
         return ok(service.update(id, dto));
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+
+        service.delete(id);
+
+        return noContent().build();
+    }
+
 }

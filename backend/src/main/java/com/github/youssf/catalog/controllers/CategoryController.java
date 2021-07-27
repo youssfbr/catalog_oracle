@@ -1,7 +1,8 @@
 package com.github.youssf.catalog.controllers;
 
-import com.github.youssf.catalog.entities.Category;
+import com.github.youssf.catalog.dto.CategoryDTO;
 import com.github.youssf.catalog.services.CategoryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,8 +20,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<CategoryDTO>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
 }

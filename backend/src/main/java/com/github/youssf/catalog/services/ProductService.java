@@ -1,7 +1,10 @@
 package com.github.youssf.catalog.services;
 
+import com.github.youssf.catalog.dto.CategoryDTO;
 import com.github.youssf.catalog.dto.ProductDTO;
+import com.github.youssf.catalog.entities.Category;
 import com.github.youssf.catalog.entities.Product;
+import com.github.youssf.catalog.repositories.CategoryRepository;
 import com.github.youssf.catalog.repositories.ProductRepository;
 import com.github.youssf.catalog.services.exceptions.DatabaseException;
 import com.github.youssf.catalog.services.exceptions.ResourceNotFoundException;
@@ -13,15 +16,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
     private final ProductRepository repository;
+    private final CategoryRepository categoryRepository;
 
-    public ProductService(final ProductRepository repository) {
+    public ProductService(final ProductRepository repository, final CategoryRepository categoryRepository) {
         this.repository = repository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Transactional(readOnly = true)
@@ -52,20 +58,22 @@ public class ProductService {
 
     @Transactional
     public ProductDTO insert(ProductDTO dto) {
+
         Product entity = new Product();
-        entity.setName(dto.getName());
+
+        copyDtoToEntity(dto, entity);
         entity = repository.save(entity);
-        return new ProductDTO(entity);
+
+        return new ProductDTO(entity, entity.getCategories());
     }
 
     @Transactional
     public ProductDTO update(long id, ProductDTO dto) {
          return repository.findById(id)
                 .map(entity -> {
-                    entity.setName(dto.getName());
-                    entity = repository.save(entity);
+                    copyDtoToEntity(dto, entity);
 
-                    return new ProductDTO(entity);
+                    return new ProductDTO(entity, entity.getCategories());
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Id Resource " + id + " not found"));
     }
@@ -80,6 +88,29 @@ public class ProductService {
         catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Integrity Violation");
         }
+    }
+
+    private boolean validateDto(Object object) {
+        return Objects.nonNull(object) && !object.toString().isEmpty();
+    }
+
+    private Product copyDtoToEntity(ProductDTO dto, Product entity) {
+        entity.setName(validateDto(dto.getName()) ? dto.getName() : entity.getName());
+        entity.setDescription(validateDto(dto.getDescription()) ? dto.getDescription() : entity.getDescription());
+        entity.setPrice(validateDto(dto.getPrice()) ? dto.getPrice() : entity.getPrice());
+        entity.setImgUrl(validateDto(dto.getImgUrl()) ? dto.getImgUrl() : entity.getImgUrl());
+        entity.setDate(validateDto(dto.getDate()) ? dto.getDate() : entity.getDate());
+
+        entity.getCategories().clear();
+
+        for (CategoryDTO catDto : dto.getCategories()) {
+
+           Category category = categoryRepository.findById(catDto.getId()).get();
+
+           entity.getCategories().add(category);
+        }
+
+        return entity;
     }
 
 }

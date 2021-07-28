@@ -3,6 +3,9 @@ package com.github.youssf.catalog.controllers;
 import com.github.youssf.catalog.dto.CategoryDTO;
 import com.github.youssf.catalog.entities.Category;
 import com.github.youssf.catalog.services.CategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -25,6 +28,20 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> findAll() {
         return ok(service.findAll());
+    }
+
+    @GetMapping
+    @RequestMapping("/paged")
+    public ResponseEntity<Page<CategoryDTO>> findAllPaged(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(value = "orderBy", defaultValue = "name") String orderBy
+    ) {
+
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+
+        return ok(service.findAllPaged(pageRequest));
     }
 
     @GetMapping("{id}")

@@ -8,8 +8,9 @@ import java.util.Objects;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CAT_SEQ")
-    @SequenceGenerator(sequenceName = "category_seq", allocationSize = 1, name = "CAT_SEQ")
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CAT_SEQ")
+    //@SequenceGenerator(sequenceName = "category_seq", allocationSize = 1, name = "CAT_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
